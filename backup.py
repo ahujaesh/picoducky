@@ -12,6 +12,7 @@ import neopixel
 import os
 import subprocess
 from datetime import datetime
+import re
 
 kbd = Keyboard(usb_hid.devices)
 cc = ConsumerControl(usb_hid.devices)
@@ -74,4 +75,28 @@ if os.path.isdir(base):
 else:
     print("Base folder not found:", base)
 
-type("vcgencmd measure_temp")
+try:
+    raw = os.popen("vcgencmd measure_temp").read().strip()
+    if raw:
+        num = re.search(r"([0-9]+(?:\.[0-9]+)?)", raw) #still cant read regex lmao
+        if num:
+            temp_c = float(num.group(1))
+            if temp_c > 45.0:
+                note_file = os.path.join(
+                    os.path.expanduser('~'),
+                    'Downloads',
+                    'rpi_temp_note_{}.txt'.format(datetime.now().strftime('%F-%H%M%S'))
+                )
+                try:
+                    with open(note_file, 'w') as f:
+                        f.write("WARNING: RPi CPU temp is {:.1f}C (>45C)\n".format(temp_c))
+                        f.write("Raw output: {}\n".format(raw))
+                    print("Temperature note written:", note_file)
+                except Exception as write_err:
+                    print("Failed to write temp note:", write_err)
+        else:
+            print("Could not parse temperature from output:", raw)
+    else:
+        print("No output from vcgencmd measure_temp")
+except Exception as e:
+    print("Failed to check temperature:", e)
