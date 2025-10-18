@@ -1,14 +1,10 @@
 #backs up my vikunja server and rpi, pulls and updates the backup clones of my git repos (I have a main ver on my computer that i edit but i always forget to pull to the nas, which kinda defeats the purpose of the backup), checks pi temps, updates libraries on said pi, just the general housekeeping stuff that I always forget to do. once its all done itll make a new text file with the output of the backup if there were any errors
-import board
-import digitalio
-import time
 from adafruit_debouncer import Debouncer
 import usb_hid
 from adafruit_hid.keyboard import Keyboard
 from adafruit_hid.keycode import Keycode
 from adafruit_hid.consumer_control import ConsumerControl
 from adafruit_hid.consumer_control_code import ConsumerControlCode
-import neopixel
 import os
 import subprocess
 from datetime import datetime
